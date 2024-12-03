@@ -28,6 +28,7 @@ class BG(pygame.sprite.Sprite):
 class Ground(pygame.sprite.Sprite):
     def __init__(self,groups, scale_factor):
         super().__init__(groups)
+        self.sprite_type = 'ground'
 
         #image
         ground_surf = pygame.image.load('Graphics/environment/ground.png').convert_alpha()
@@ -67,6 +68,10 @@ class Plane(pygame.sprite.Sprite):
         #mask
         self.mask = pygame.mask.from_surface(self.image)
 
+        # sound
+        self.jump_sound = pygame.mixer.Sound('Sounds/jump.wav')
+        self.jump_sound.set_volume(0.3)
+
     def import_frames(self, scale_factor):
         self.frames = []
         for i in range(3):
@@ -80,6 +85,7 @@ class Plane(pygame.sprite.Sprite):
         self.rect.y = round(self.pos.y)
 
     def jump(self):
+        self.jump_sound.play()
         self.direction = -400
 
     def animate(self,dt):
@@ -101,6 +107,7 @@ class Plane(pygame.sprite.Sprite):
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self, groups, scale_factor):
         super().__init__(groups)
+        self.sprite_type = 'obstacle'
 
         orientation = choice(('up','down'))
         surf = pygame.image.load(f'Graphics/obstacles/{choice((0,1))}.png').convert_alpha()
