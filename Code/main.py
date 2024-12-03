@@ -1,6 +1,6 @@
 import pygame, sys, time
 from settings import *
-from sprites import BG, Ground, Plane
+from sprites import BG, Ground, Plane, Obstacle
 
 class Game:
     def __init__(self):
@@ -22,8 +22,17 @@ class Game:
 
         #sprite setup
         BG(self.all_sprites, self.scale_factor)
-        Ground(self.all_sprites, self.scale_factor)
+        Ground([self.all_sprites,self.collision_sprites], self.scale_factor)
         self.plane = Plane(self.all_sprites,self.scale_factor / 1.7)
+
+        # timer
+        self.obstacle_timer = pygame.USEREVENT + 1
+        pygame.time.set_timer(self.obstacle_timer,1400)
+
+    def collisions(self):
+        if pygame.sprite.spritecollide(self.plane,self.collision_sprites,False,pygame.sprite.collide_mask):
+            pygame.quit()
+            sys.exit()
 
     def run(self):
         last_time = time.time()
@@ -43,10 +52,15 @@ class Game:
                     if event.key == pygame.K_UP:
                         self.plane.jump()
 
+                if event.type == self.obstacle_timer:
+                    Obstacle([self.all_sprites,self.collision_sprites], self.scale_factor)
+
             #game logic
             self.display_surface.fill('black')
             self.all_sprites.update(dt)
+            self.collisions()
             self.all_sprites.draw(self.display_surface)
+
             pygame.display.update()
             self.clock.tick(FRAMERATE)
             
